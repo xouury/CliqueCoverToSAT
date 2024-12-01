@@ -39,7 +39,44 @@ def encode(vertex_count, edges, k):
     num_clauses = len(clauses)
     cnf = f"p cnf {num_variables} {num_clauses}\n"
     cnf += "\n".join(" ".join(map(str, clause)) + " 0" for clause in clauses)
+
     return cnf
+
+def call_solver(cnf_file, solver_name, verbose):
+    try:
+        command = f"{solver_name} {'-verb=0' if not verbose else ''} {cnf_file}"
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    except FileNotFoundError:
+        print("no file")
+        return None
+    except subprocess.CalledProcessError:
+        print("problem with processing")
+        return None
+
+    return result.stdout
+
+def decode_solution(solution, k):
+    cliques = [[] for _ in range(k)]
+    
+    for var in solution:
+        if var > 0:
+            i = (var - 1) // k + 1
+            c = (var - 1) % k
+            cliques[c].append(i)
+
+    return [clique for clique in cliques if clique]
+
+def print_output(result, k):
+    if "UNSAT" in result:
+        print("Result: UNSATISFIABLE")
+    elif "SAT" in result:
+        print("Result: SATISFIABLE")
+
+        solution = [int(x) for x in result.splitlines() if x.strip() and x[0].isdigit()][0]
+        decoded_solution = decode_solution(solution, k)
+
+        for idx, clique in enumerate(decoded_solution):
+            print(f"Clique {idx + 1}: {clique}")
 
 def main():
     parser = ArgumentParser()
@@ -64,6 +101,18 @@ def main():
         required=True,
         help=("Number of cliques."),
     )
+    parser.add_argument(
+        "-s",
+        "--solver",
+        default="./glucose",
+        help=("The SAT solver to be used."),
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Show full solver statistics and detailed output.",
+    )
 
     args = parser.parse_args()
 
@@ -72,8 +121,11 @@ def main():
 
     with open(args.output, 'w') as f:
         f.write(cnf)
+    
+    result = call_solver(args.output, args.solver, args.verbose)
+    print(result)
+
     print(f"CNF formula written to {args.output}")
 
-if __name__ == "__main__":
+if __name__ == "main":
    main()
-
