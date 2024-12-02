@@ -1,4 +1,3 @@
-import time
 import subprocess
 from argparse import ArgumentParser
 
@@ -46,7 +45,7 @@ def encode(vertex_count, edges, k):
 
 def call_solver(cnf_file, solver_name):
     try:
-        command = [solver_name, '-model', cnf_file]
+        command = [solver_name, cnf_file]
         result = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return result.stdout
     except FileNotFoundError:
@@ -105,33 +104,33 @@ def main():
         "--input",
         required=True,
         type=str,
-        help=("File containing a graph."),
+        help=("Provide a file containing a graph."),
     )
     parser.add_argument(
         "-o",
         "--output",
         default="formula.cnf",
         type=str,
-        help=("Output file for the DIMACS format (i.e. the CNF formula)."),
+        help=("Provide an output file for the DIMACS format (i.e. the CNF formula)."),
     )
     parser.add_argument(
         "-k",
         type=int,
         required=True,
-        help=("Number of cliques."),
+        help=("Provide a number of cliques."),
     )
     parser.add_argument(
         "-s",
         "--solver",
         default="./glucose",
-        help=("The SAT solver to be used."),
+        help=("Provide the SAT solver to be used."),
     )
     parser.add_argument(
         "-v",
         "--verbose",
         default=False,
         action="store_true",
-        help="Show full solver statistics and detailed output.",
+        help="Shows full solver statistics and detailed output.",
     )
 
     args = parser.parse_args()
