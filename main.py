@@ -6,8 +6,10 @@ def read_graph(file_name):
     with open(file_name, 'r') as f:
         lines = f.readlines()
 
-    vertex_count = int(lines[0].strip())
-    edges = [tuple(map(int, line.strip().split())) for line in lines[1:]]
+    lines = [line.strip() for line in lines if not line.strip().startswith("#") and line.strip()]
+
+    vertex_count = int(lines[0]) 
+    edges = [tuple(map(int, line.split())) for line in lines[1:]] 
     
     return vertex_count, edges
 
@@ -32,7 +34,7 @@ def encode(vertex_count, edges, k):
     #Third condition is that non-adjacent vertices cannot be in the same clique 
     for i in range(1, vertex_count + 1):
         for j in range(1, vertex_count + 1):
-            if i != j and (i, j) not in edges and (j, i) not in edges:
+            if i !=j and (i, j) not in edges and (j, i) not in edges:
                 for c in range(1, k + 1):
                     clauses.append([-variable(i, c), -variable(j, c)])
     
@@ -42,41 +44,58 @@ def encode(vertex_count, edges, k):
 
     return cnf
 
-def call_solver(cnf_file, solver_name, verbose):
+def call_solver(cnf_file, solver_name):
     try:
-        command = f"{solver_name} {'-verb=0' if not verbose else ''} {cnf_file}"
-        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        command = [solver_name, '-model', cnf_file]
+        result = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return result.stdout
     except FileNotFoundError:
-        print("no file")
+        print("Error: SAT solver was not found.")
         return None
-    except subprocess.CalledProcessError:
-        print("problem with processing")
+    except subprocess.CalledProcessError as e:
+        print("Error: Solver has encountered an error.")
+        print(f"Details: {e.stderr}")
         return None
-
-    return result.stdout
-
-def decode_solution(solution, k):
-    cliques = [[] for _ in range(k)]
     
-    for var in solution:
+def decode_solution(solution, k):
+    solution_lines = solution.splitlines()
+    model = solution_lines[len(solution_lines) - 1]
+
+    if not model:
+        print("Error: No model found in the SAT solver output")
+        return None
+
+    variables = list(map(int, model.split()[1:]))
+    clique_cover = [[] for _ in range(k)]
+
+    for var in variables:
         if var > 0:
             i = (var - 1) // k + 1
             c = (var - 1) % k
-            cliques[c].append(i)
+            clique_cover[c].append(i)
+    
+    return [clique for clique in clique_cover if clique]
 
-    return [clique for clique in cliques if clique]
-
-def print_output(result, k):
+def print_output(result, k, verbose):
     if "UNSAT" in result:
+        if verbose:
+            print(result)
+            return
         print("Result: UNSATISFIABLE")
     elif "SAT" in result:
-        print("Result: SATISFIABLE")
+        if verbose:
+            print(result)
+        else:
+            print("Result: SATISFIABLE")
 
-        solution = [int(x) for x in result.splitlines() if x.strip() and x[0].isdigit()][0]
-        decoded_solution = decode_solution(solution, k)
+        decoded_solution = decode_solution(result, k)
 
-        for idx, clique in enumerate(decoded_solution):
-            print(f"Clique {idx + 1}: {clique}")
+        if decoded_solution is not None:
+            for idx, clique in enumerate(decoded_solution):
+                print(f"Clique {idx + 1}: {clique}")
+    else:
+        print("Error: Unexpected SAT solver output")
+        print(result)
 
 def main():
     parser = ArgumentParser()
@@ -84,7 +103,7 @@ def main():
     parser.add_argument(
         "-i",
         "--input",
-        default = "input.in",
+        required=True,
         type=str,
         help=("File containing a graph."),
     )
@@ -110,6 +129,7 @@ def main():
     parser.add_argument(
         "-v",
         "--verbose",
+        default=False,
         action="store_true",
         help="Show full solver statistics and detailed output.",
     )
@@ -121,11 +141,14 @@ def main():
 
     with open(args.output, 'w') as f:
         f.write(cnf)
-    
-    result = call_solver(args.output, args.solver, args.verbose)
-    print(result)
-
     print(f"CNF formula written to {args.output}")
+    
+    result = call_solver(args.output, args.solver)
+    if result is None:
+        print("Error: Solver execution failed.")
+        return
+    
+    print_output(result, args.k, args.verbose)
 
-if __name__ == "main":
+if __name__ == "__main__":
    main()
