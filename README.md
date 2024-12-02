@@ -31,7 +31,7 @@ The input is a text file that specifies the graph. Comments can be added using `
 ```
 
 1. The first line (`3`) specifies the number of vertices.
-2. Each subsequent line (`1 2`, `2 3`, '3, 1') specifies an edge between two vertices.
+2. Each subsequent line (`1 2`, `2 3`, `3 1`) specifies an edge between two vertices.
 ### **Output Format**
 1. A DIMACS CNF file (by default `formula.cnf`) is generated, which encodes the problem as a SAT instance.
 2. The script runs the SAT solver and outputs:
@@ -47,7 +47,8 @@ Run the script using the following arguments:
 - `-v / --verbose`: Show full solver statistics and output (optional).
   
 One example of a possible command can be:
-python main.py -i graph.in -o formula.cnf -k 2 -s ./glucose -v
+
+`python main.py -i graph.in -o formula.cnf -k 2 -s ./glucose -v`
 
 ## **Attached Instances Description**
 1. 'small_instance_SAT.in' provides an example of a small humanly readable instance, which is **satisfiable** for any k more than 2.
