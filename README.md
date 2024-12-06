@@ -53,4 +53,4 @@ One example of a possible command can be:
 ## **Attached Instances Description**
 1. 'small_instance_SAT.in' provides an example of a small humanly readable instance, which is **satisfiable** for any k more than 2.
 2. 'small_instance_UNSAT.in' provides an example of a small humanly readable instance, which is **unsatisfiable** for k = 1.
-3. 'nontrivial_instance_SAT.in' provides a large input graph, which is **satisfiable** for k = 170. Note: since input is large, a run time is around 12 seconds.
+3. 'nontrivial_instance_SAT.in' provides a large input graph, which is **satisfiable** for k = 170. Since input is large, a wall-clock time (time waited to see results) is **16.82 s**
