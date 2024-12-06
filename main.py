@@ -45,7 +45,7 @@ def encode(vertex_count, edges, k):
 
 def call_solver(cnf_file, solver_name):
     try:
-        command = [solver_name, cnf_file]
+        command = [solver_name, '-model', cnf_file]
         result = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return result.stdout
     except FileNotFoundError:

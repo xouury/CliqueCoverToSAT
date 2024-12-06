@@ -51,9 +51,9 @@ One example of a possible command can be:
 `python main.py -i graph.in -o formula.cnf -k 2 -s ./glucose -v`
 
 ## **Attached Instances Description**
-1. 'small_instance_SAT.in' provides an example of a small humanly readable instance, which is **satisfiable** for any k more than 2.
+1. 'small_instance_SAT.in' provides an example of a small humanly readable instance, which is **satisfiable** for any k >= 3.
 2. 'small_instance_UNSAT.in' provides an example of a small humanly readable instance, which is **unsatisfiable** for k = 1.
-3. 'nontrivial_instance_SAT.in' provides a large input graph, which is **satisfiable** for k = 170. Since input is large, a wall-clock time (time waited to see results) is **16.82 s**
+3. 'nontrivial_instance_SAT.in' provides a large input graph, which is **satisfiable** for k >= 100. Since input is large, a wall-clock time (time waited to see results) is **16.82 s**
 
 ### **Further Experiments**
 After doing more tests, my overall observation is that when large input file is given, it takes singnificantly long time for the script to determine that instance is unsatisfiable. Moreover, in most cases large instances are unsatisfiable for a small clique numbers. Therefore, if a small clique number is given with a large input, and instance is unsatisfiable, it will take more than 30-40 minutes for the script to run.
