@@ -54,3 +54,10 @@ One example of a possible command can be:
 1. 'small_instance_SAT.in' provides an example of a small humanly readable instance, which is **satisfiable** for any k more than 2.
 2. 'small_instance_UNSAT.in' provides an example of a small humanly readable instance, which is **unsatisfiable** for k = 1.
 3. 'nontrivial_instance_SAT.in' provides a large input graph, which is **satisfiable** for k = 170. Since input is large, a wall-clock time (time waited to see results) is **16.82 s**
+
+### **Further Experiments**
+After doing more tests, my overall observation is that when large input file is given, it takes singnificantly long time for the script to determine that instance is unsatisfiable. Moreover, in most cases large instances are unsatisfiable for a small clique numbers. Therefore, if a small clique number is given with a large input, and instance is unsatisfiable, it will take more than 30 minutes for the script to run.
+
+One of the examples could be with a large input that is satisfiable for k >= 90. Assume user gives k = 30, then it will take more than 30 minutes for the code to find out that instances is unsatisfiable. It will take around same time to evaluate that for k = 90 instance is satisfiable. However, if user puts k = 150, it will take around 20 seconds for code to run. 
+
+Based on these results, it is more efficient to provide larger clique numbers as input, and decrease it with each test to find minimum clique number. 
