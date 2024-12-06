@@ -56,6 +56,6 @@ One example of a possible command can be:
 3. 'nontrivial_instance_SAT.in' provides a large input graph, which is **satisfiable** for k >= 100. Since input is large, a wall-clock time (time waited to see results) is **16.82 s**
 
 ### **Further Experiments**
-After doing more tests, my overall observation is that when large input file is given, it takes singnificantly long time for the script to determine that instance is unsatisfiable. Moreover, in most cases large instances are unsatisfiable for a small clique numbers. Therefore, if a small clique number is given with a large input, and instance is unsatisfiable, it will take more than 30-40 minutes for the script to run.
+After doing more tests, my overall observation is that when large input file is given, it takes significantly long time for the script to determine that instance is unsatisfiable. Moreover, in most cases large instances are unsatisfiable for a small clique numbers. Therefore, if a small clique number is given with a large input, and instance is unsatisfiable, it will take more than 30-40 minutes for the script to run.
 
 Based on these results, it is more efficient to provide larger clique numbers as input, and decrease it with each test to find minimum clique number. 
